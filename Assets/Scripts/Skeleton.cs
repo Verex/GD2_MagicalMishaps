@@ -7,9 +7,9 @@ public class Skeleton : NetworkBehaviour {
 
 	[SerializeField] private float moveSpeed = 1.0f;
 	[SerializeField] private bool isMoving;
+
 	private Vector3 startPosition;
 	private Vector3 endPosition;
-	private float t;
 
 	private IEnumerator SlowUpdate() {
 		while (true) {
@@ -26,19 +26,16 @@ public class Skeleton : NetworkBehaviour {
 			//transform.position += new Vector3(1, 0, 0);
 
 			if (!isMoving) {
-				Debug.Log("Move");
 				StartCoroutine(Move());
-			} else {
-				Debug.Log("No move.");
 			}
-
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(1.0f);
 		}
 	}
 
 	private IEnumerator Move() {
 		isMoving = true;
 		startPosition = transform.position;
+		float t = 0.0f;
 
 		endPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z);
 
@@ -52,7 +49,7 @@ public class Skeleton : NetworkBehaviour {
 
 		isMoving = false;
 
-		yield return 0;
+		yield break;
 	}
 
 	// Use this for initialization
