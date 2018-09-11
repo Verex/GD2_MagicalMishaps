@@ -3,64 +3,117 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class Skeleton : NetworkBehaviour {
+public class Skeleton : NetworkBehaviour
+{
 
-	[SerializeField] private float moveSpeed = 1.0f;
-	[SerializeField] private bool isMoving;
+    [SyncVar] private Vector3 targetPosition;
 
-	private Vector3 startPosition;
-	private Vector3 endPosition;
+    [SerializeField] private float moveSpeed = 1.0f;
+    [SerializeField] private bool isMoving;
 
-	private IEnumerator SlowUpdate() {
-		while (true) {
+    private Vector3 startPosition;
+    private Vector3 endPosition;
 
-			/*
-				RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, 1.0f);
+	private int direction = 1;
+    private IEnumerator SlowUpdate()
+    {
+        while (true)
+        {
+            if (!isMoving)
+            {
+				Vector2 moveDirection = new Vector2(direction, 0);
 
-				if (hit.collider != null) {
-					Debug.Log("We hit something.");
-					yield return new WaitForSeconds(200.0f);
-				}
-			 */
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, moveDirection, 1.0f);
 
-			//transform.position += new Vector3(1, 0, 0);
+                if (hit.collider == null)
+                {
 
-			if (!isMoving) {
-				StartCoroutine(Move());
-			}
-			yield return new WaitForSeconds(1.0f);
-		}
-	}
+					// Change serverside transform.
+					StartCoroutine(Move(moveDirection));
+                }
+                else
+                {
+                    Debug.Log("We hit something.");
+					direction *= -1;
+                }
+            }
 
-	private IEnumerator Move() {
-		isMoving = true;
-		startPosition = transform.position;
-		float t = 0.0f;
+            yield return new WaitForSeconds(1.0f);
+        }
+    }
 
-		endPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z);
+    [ClientRpc]
+    private void RpcMoveEntity(Vector2 direction, Vector3 startPosition)
+    {
+		// Don't want host doing this.
+		if (isServer) return;
 
-		float factor = 1.0f;
+        Debug.Log("Move cmd recieved.");
 
-		while (t < 1.0f) {
-			t += Time.deltaTime * moveSpeed * factor;
-			transform.position = Vector3.Lerp(startPosition, endPosition, t);
-			yield return null;
-		}
+        if (!isMoving)
+        {
+			transform.position = startPosition;
+            StartCoroutine(Move(direction));
+        }
+    }
 
-		isMoving = false;
+    private IEnumerator Move(Vector2 direction)
+    {
+        isMoving = true;
+        startPosition = transform.position;
+        float t = 0.0f;
 
-		yield break;
-	}
+        // Set ending position to synced target position.
+        endPosition = new Vector3(transform.position.x + direction.x,
+                                    transform.position.y + direction.y,
+                                    transform.position.z);
 
-	// Use this for initialization
-	void Start () {
 		if (isServer) {
-			StartCoroutine(SlowUpdate());
+			targetPosition = endPosition;
+
+			// Send move rpc to clients.
+			//RpcMoveEntity(direction, startPosition);
 		}
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+        float factor = 1.0f;
+
+        while (t < 1.0f)
+        {
+            t += Time.deltaTime * moveSpeed * factor;
+
+            transform.position = Vector3.Lerp(startPosition, endPosition, t);
+
+            yield return null;
+        }
+
+        isMoving = false;
+
+        yield break;
+    }
+
+    // Use this for initialization
+    void Start()
+    {
+        if (isServer)
+        {
+            targetPosition = transform.position;
+
+            StartCoroutine(SlowUpdate());
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+		if (isClient && !isServer) {
+			if (transform.position != targetPosition) {
+				
+			}
+		}
+    }
+
+    private void OnClientStart()
+    {
+        transform.position = targetPosition;
+    }
 }
