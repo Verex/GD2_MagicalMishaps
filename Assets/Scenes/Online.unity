@@ -9186,7 +9186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TransformSyncMode: 1
-  m_SendInterval: 0.1
+  m_SendInterval: 0.14285715
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
   m_SyncSpin: 0
@@ -9315,3 +9315,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee729fd564ae054fadedecae349b638, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 1
