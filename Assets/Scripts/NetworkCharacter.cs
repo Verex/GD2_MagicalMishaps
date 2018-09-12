@@ -156,7 +156,7 @@ public abstract class NetworkCharacter : NetworkBehaviour
 		RpcMoveStart(direction, transform.position, targetPosition);
 
 		// Wait for move.
-		yield return new WaitForSeconds(1.0f * moveSpeed);
+		yield return new WaitForSeconds(1.0f / moveSpeed);
 
 		// Update movement state.
 		isMoving = false;
