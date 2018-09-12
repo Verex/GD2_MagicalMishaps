@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 114610979210623830}
   - component: {fileID: 114218110229733214}
   - component: {fileID: 114467024693457096}
+  - component: {fileID: 61215455775263400}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -44,6 +45,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &61215455775263400
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1421525113041604}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!95 &95126020358847800
 Animator:
   serializedVersion: 3
@@ -73,11 +99,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a512ab77b1fa34494f8e01c0eccea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateDelay: 0.01
-  moveSpeed: 1.5
+  updateDelay: 0.02
+  moveSpeed: 1.35
   isMoving: 0
-  inputDelay: 0.01
-  inputThreshold: 0.45
+  inputDelay: 0.008
+  inputMoveThreshold: 0.4
+  inputDirThreshold: 0.05
+  cameraPrefab: {fileID: 1140176402034416, guid: 4abf087637a99bd458d1eaefd6867765,
+    type: 2}
 --- !u!114 &114467024693457096
 MonoBehaviour:
   m_ObjectHideFlags: 1

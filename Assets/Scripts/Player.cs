@@ -7,7 +7,11 @@ using UnityEngine.Networking;
 public class Player : NetworkCharacter {
 
 	[SerializeField] private float inputDelay = 0.01f;
-	[SerializeField] private float inputThreshold = 0.2f;
+	[SerializeField] private float inputMoveThreshold = 0.2f;
+	[SerializeField] private float inputDirThreshold = 0.1f;
+	[SerializeField] private GameObject cameraPrefab;
+
+	private GameObject camera;
 
 	private Vector2 moveDirection;
 	private Vector2 lastDirection;
@@ -19,6 +23,19 @@ public class Player : NetworkCharacter {
 	{
 		shouldMove = moving;
 		
+		// Check if we're trying to change move direction.
+		if (moveDirection != direction && direction != Vector2.zero)
+		{
+			moveDirection = direction;
+
+			// Update our animation if needed.
+			if (!shouldMove)
+			{
+				UpdateDirection(direction);
+				RpcChangeDirection(direction);
+			}
+		}
+
 		moveDirection = direction;
 	}
 
@@ -35,16 +52,24 @@ public class Player : NetworkCharacter {
 			bool move = false;
 
 			// Check if we are trying to move.
-			if (Mathf.Abs(x) > inputThreshold)
+			if (Mathf.Abs(x) > inputDirThreshold)
 			{
 				direction = new Vector2((Mathf.Abs(x) / x) * Mathf.Ceil(Mathf.Abs(x)), 0);
-				move = true;
+
+				if (Mathf.Abs(x) > inputMoveThreshold)
+				{
+					move = true;
+				}
 			}
-			else if (Mathf.Abs(y) > inputThreshold) 
+			else if (Mathf.Abs(y) > inputDirThreshold) 
 			{
 				// Move vertically.
 				direction = new Vector2(0, (Mathf.Abs(y) / y) * Mathf.Ceil(Mathf.Abs(y)));
-				move = true;
+				
+				if (Mathf.Abs(y) > inputMoveThreshold)
+				{
+					move = true;
+				}
 			}
 
 			if (direction != lastDirection || move != lastMove)
@@ -100,6 +125,13 @@ public class Player : NetworkCharacter {
 		// Start input coroutine if local player.
 		if (isLocalPlayer) 
 		{
+			// Spawn local camera.
+			camera = Instantiate(cameraPrefab);
+
+			camera.transform.parent = transform;
+			camera.transform.localPosition = new Vector3(0, 0, -10);
+
+			// Start input coroutine.
 			StartCoroutine(UpdateInput());
 		}
 	}

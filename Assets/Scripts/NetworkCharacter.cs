@@ -33,6 +33,13 @@ public abstract class NetworkCharacter : NetworkBehaviour
 
     }
 
+	[ClientRpc]
+	protected void RpcChangeDirection(Vector2 direction)
+	{
+		// Update sprite flip.
+		spriteRenderer.flipX = (direction.x != 0 && direction.x == -1 ? true : false);
+	}
+
 	[TargetRpc]
 	protected void TargetUpdatePosition(NetworkConnection target, Vector3 position) 
 	{
@@ -138,22 +145,7 @@ public abstract class NetworkCharacter : NetworkBehaviour
 		// Set animation parameters.
 		animator.SetBool("isMoving", true);
 
-		if (direction.x != 0) 
-		{
-			animator.SetFloat("direction", 0.5f);
-		} 
-		else if (direction.y != 0) 
-		{
-			switch ((int)direction.y) 
-			{
-				case -1:
-					animator.SetFloat("direction", 0.0f);
-					break;
-				case 1:
-					animator.SetFloat("direction", 1.0f);
-					break;
-			}
-		}
+		UpdateDirection(direction);
 
 		// Callback for move start.
 		OnMoveStart();
@@ -177,6 +169,27 @@ public abstract class NetworkCharacter : NetworkBehaviour
 		RpcMoveFinish(transform.position);
 
 		yield break;
+	}
+
+	[Server]
+	protected void UpdateDirection(Vector2 direction)
+	{
+		if (direction.x != 0) 
+		{
+			animator.SetFloat("direction", 0.5f);
+		} 
+		else if (direction.y != 0) 
+		{
+			switch ((int)direction.y) 
+			{
+				case -1:
+					animator.SetFloat("direction", 0.0f);
+					break;
+				case 1:
+					animator.SetFloat("direction", 1.0f);
+					break;
+			}
+		}
 	}
 
     // Use this for initialization
