@@ -126,6 +126,9 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	[Server]
 	protected abstract IEnumerator UpdateCharacter();
 
+	[Server] protected virtual void OnMoveStart() { }
+	[Server] protected virtual void OnMoveFinish() { }
+
 	[Server]
 	protected IEnumerator NetworkMove(Vector2 direction, Vector3 targetPosition) 
 	{
@@ -152,6 +155,9 @@ public abstract class NetworkCharacter : NetworkBehaviour
 			}
 		}
 
+		// Callback for move start.
+		OnMoveStart();
+
 		// Start character movement on all clients.
 		RpcMoveStart(direction, transform.position, targetPosition);
 
@@ -163,6 +169,9 @@ public abstract class NetworkCharacter : NetworkBehaviour
 
 		// Update new position.
 		transform.position = targetPosition;
+
+		// Callback for move finish.
+		OnMoveFinish();
 
 		// End character movement for all clients.
 		RpcMoveFinish(transform.position);

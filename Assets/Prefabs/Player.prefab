@@ -73,11 +73,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a512ab77b1fa34494f8e01c0eccea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateDelay: 0.001
-  moveSpeed: 2
+  updateDelay: 0.01
+  moveSpeed: 1.5
   isMoving: 0
-  inputDelay: 0.02
-  inputThreshold: 0.1
+  inputDelay: 0.01
+  inputThreshold: 0.45
 --- !u!114 &114467024693457096
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 95126020358847800}
-  m_ParameterSendBits: 0
+  m_ParameterSendBits: 7
   param0: 
   param1: 
   param2: 

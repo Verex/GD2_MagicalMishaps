@@ -10,21 +10,19 @@ public class Player : NetworkCharacter {
 	[SerializeField] private float inputThreshold = 0.2f;
 
 	private Vector2 moveDirection;
+	private Vector2 lastDirection;
 	private bool shouldMove = false;
+	private bool lastMove;
 
 	[Command]
 	private void CmdMoveState(bool moving, Vector2 direction)
 	{
-
 		shouldMove = moving;
 		
-		if (!isMoving && shouldMove) 
-		{
-			Debug.Log(direction);
-			moveDirection = direction;
-		}
+		moveDirection = direction;
 	}
 
+	[Client]
 	private IEnumerator UpdateInput()
 	{
 		while (true) 
@@ -32,20 +30,28 @@ public class Player : NetworkCharacter {
 			float x = Input.GetAxis("Horizontal"),
 					y = Input.GetAxis("Vertical");
 
+			Vector2 direction = Vector2.zero;
+
+			bool move = false;
+
 			// Check if we are trying to move.
 			if (Mathf.Abs(x) > inputThreshold)
 			{
-				// Move horizontally.
-				CmdMoveState(true, new Vector2((Mathf.Abs(x) / x) * Mathf.Ceil(Mathf.Abs(x)), 0));
+				direction = new Vector2((Mathf.Abs(x) / x) * Mathf.Ceil(Mathf.Abs(x)), 0);
+				move = true;
 			}
 			else if (Mathf.Abs(y) > inputThreshold) 
 			{
 				// Move vertically.
-				CmdMoveState(true, new Vector2(0, (Mathf.Abs(y) / y) * Mathf.Ceil(Mathf.Abs(y))));
+				direction = new Vector2(0, (Mathf.Abs(y) / y) * Mathf.Ceil(Mathf.Abs(y)));
+				move = true;
 			}
-			else
+
+			if (direction != lastDirection || move != lastMove)
 			{
-				CmdMoveState(false, Vector2.zero);
+				CmdMoveState(move, direction);
+				lastDirection = direction;
+				lastMove = move;
 			}
 
 			yield return new WaitForSeconds(inputDelay);
@@ -71,6 +77,14 @@ public class Player : NetworkCharacter {
 		}
 
 		yield return null;
+	}
+
+	protected override void OnMoveFinish()
+	{
+		if (!shouldMove)
+		{
+			StopMovement();
+		}
 	}
 
 	new private void Start()
