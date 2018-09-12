@@ -7,7 +7,14 @@ public class Skeleton : NetworkCharacter
 {
 	private Vector2 moveDirection;
 
-	protected override IEnumerator UpdateCharacter()
+	protected override IEnumerator ClientUpdate()
+	{
+
+
+		yield return null;
+	}
+
+	protected override IEnumerator ServerUpdate()
 	{
 		// Check if character is currently moving.
 		if (!isMoving)
@@ -20,6 +27,7 @@ public class Skeleton : NetworkCharacter
 				if (c == 0) 
 				{
 					moveDirection = RandomDirection();
+					facing = moveDirection;
 				}
 				else if (c == 1)
 				{
@@ -36,6 +44,7 @@ public class Skeleton : NetworkCharacter
 			{
 				// Choose new direction.
 				moveDirection = RandomDirection();
+				facing = moveDirection;
 
 				// Wait for a little.
 				yield return new WaitForSeconds(1.0f);
@@ -59,11 +68,17 @@ public class Skeleton : NetworkCharacter
 		return direction;
 	}
 
+	protected override void OnDie()
+	{
+		NetworkServer.Destroy(this.gameObject);
+	}
+
 	new private void Start()
 	{
 		base.Start();
 
 		// Choose initial movement direction.
 		moveDirection = RandomDirection();
+		facing = moveDirection;
 	}
 }

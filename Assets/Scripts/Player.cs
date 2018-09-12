@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-[NetworkSettings(sendInterval = 0.1f)]
+[NetworkSettings(sendInterval = 0.01f)]
 public class Player : NetworkCharacter {
 
 	[SerializeField] private float inputDelay = 0.01f;
 	[SerializeField] private float inputMoveThreshold = 0.2f;
 	[SerializeField] private float inputDirThreshold = 0.1f;
+	[SerializeField] private float attackProjectileSpeed = 2.0f;
+	[SerializeField] private float attackDelay = 2.0f;
 	[SerializeField] private GameObject cameraPrefab;
+	[SerializeField] private GameObject attackProjectilePrefab;
 
 	private GameObject camera;
 
@@ -17,6 +20,9 @@ public class Player : NetworkCharacter {
 	private Vector2 lastDirection;
 	private bool shouldMove = false;
 	private bool lastMove;
+	private bool lastAttack;
+	private float lastAttackTime = 0.0f;
+	private PlayerInput playerInput;
 
 	[Command]
 	private void CmdMoveState(bool moving, Vector2 direction)
@@ -29,14 +35,33 @@ public class Player : NetworkCharacter {
 			moveDirection = direction;
 
 			// Update our animation if needed.
-			if (!shouldMove)
+			if (!shouldMove && !isMoving)
 			{
-				UpdateDirection(direction);
-				RpcChangeDirection(direction);
+				facing = direction;
+				UpdateDirection();
 			}
 		}
 
 		moveDirection = direction;
+	}
+
+	[Command]
+	private void CmdAttack()
+	{
+		if (lastAttackTime + attackDelay <= Time.time)
+		{
+			lastAttackTime = Time.time;
+
+			GameObject p = Instantiate(attackProjectilePrefab, transform.position + new Vector3(facing.x, facing.y, transform.position.z), Quaternion.identity);
+			p.GetComponent<Rigidbody2D>().AddForce(facing * attackProjectileSpeed, ForceMode2D.Impulse);
+			NetworkServer.Spawn(p);
+		}
+	}
+
+	protected override IEnumerator ClientUpdate()
+	{
+
+		yield return null;
 	}
 
 	[Client]
@@ -44,39 +69,42 @@ public class Player : NetworkCharacter {
 	{
 		while (true) 
 		{
-			float x = Input.GetAxis("Horizontal"),
-					y = Input.GetAxis("Vertical");
-
-			Vector2 direction = Vector2.zero;
-
-			bool move = false;
-
-			// Check if we are trying to move.
-			if (Mathf.Abs(x) > inputDirThreshold)
+			if (playerInput.Actions != null)
 			{
-				direction = new Vector2((Mathf.Abs(x) / x) * Mathf.Ceil(Mathf.Abs(x)), 0);
+				// Capture input.
+				Vector2 inputDirection = (Vector2) playerInput.Actions.Move,
+						absInputDirection = new Vector2(Mathf.Abs(inputDirection.x), Mathf.Abs(inputDirection.y)),
+						direction = Vector2.zero;
+				// Set default state of move.
+				bool move = false;
 
-				if (Mathf.Abs(x) > inputMoveThreshold)
+				// Check if we are trying to move.
+				if (absInputDirection.x > inputDirThreshold)
 				{
-					move = true;
-				}
-			}
-			else if (Mathf.Abs(y) > inputDirThreshold) 
-			{
-				// Move vertically.
-				direction = new Vector2(0, (Mathf.Abs(y) / y) * Mathf.Ceil(Mathf.Abs(y)));
-				
-				if (Mathf.Abs(y) > inputMoveThreshold)
-				{
-					move = true;
-				}
-			}
+					direction = new Vector2((absInputDirection.x / inputDirection.x) * Mathf.Ceil(absInputDirection.x), 0);
 
-			if (direction != lastDirection || move != lastMove)
-			{
-				CmdMoveState(move, direction);
-				lastDirection = direction;
-				lastMove = move;
+					if (absInputDirection.x > inputMoveThreshold)
+					{
+						move = true;
+					}
+				}
+				else if (absInputDirection.y > inputDirThreshold) 
+				{
+					// Move vertically.
+					direction = new Vector2(0, (absInputDirection.y / inputDirection.y) * Mathf.Ceil(absInputDirection.y));
+					
+					if (absInputDirection.y > inputMoveThreshold)
+					{
+						move = true;
+					}
+				}
+
+				if (direction != lastDirection || move != lastMove)
+				{
+					CmdMoveState(move, direction);
+					lastDirection = direction;
+					lastMove = move;
+				}
 			}
 
 			yield return new WaitForSeconds(inputDelay);
@@ -84,7 +112,7 @@ public class Player : NetworkCharacter {
 	}
 	
 	// Server side update.
-	protected override IEnumerator UpdateCharacter()
+	protected override IEnumerator ServerUpdate()
 	{
 		if (!isMoving && shouldMove)
 		{
@@ -131,8 +159,28 @@ public class Player : NetworkCharacter {
 			camera.transform.parent = transform;
 			camera.transform.localPosition = new Vector3(0, 0, -10);
 
+			// Add player input component.
+			playerInput = gameObject.AddComponent(typeof(PlayerInput)) as PlayerInput;
+
 			// Start input coroutine.
 			StartCoroutine(UpdateInput());
+		}
+	}
+
+	protected override void OnDie()
+	{
+		NetworkServer.Destroy(this.gameObject);
+	}
+
+	private void Update()
+	{
+		if (isLocalPlayer)
+		{
+			// Check if we're trying to attack.
+			if (playerInput.Actions.Attack.WasReleased)
+			{
+				CmdAttack();
+			}
 		}
 	}
 

@@ -5,25 +5,29 @@ using UnityEngine.Networking;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Animator))]
+[NetworkSettings(sendInterval = 0.01f)]
 public abstract class NetworkCharacter : NetworkBehaviour
 {
-	[SerializeField] private float updateDelay = 0.01f;
+	[SerializeField] private float serverUpdateDelay = 0.01f;
+	[SerializeField] private float clientUpdateDelay = 0.01f;
     [SerializeField] protected float moveSpeed = 1.0f;
+	[SerializeField] protected float maxHealth = 3f;
 
     public bool isMoving;
+
+	[SyncVar] public Vector2 facing;
+	[SyncVar] public float health;
 
 	protected SpriteRenderer spriteRenderer;
 	protected Animator animator;
 
     [ClientRpc]
-    protected void RpcMoveStart(Vector2 direction, Vector3 startPosition, Vector3 endPosition)
+    protected void RpcMoveStart(Vector3 startPosition, Vector3 endPosition)
     {
-		// Update sprite flip.
-		spriteRenderer.flipX = (direction.x != 0 && direction.x == -1 ? true : false);
-
 		// Set our position to where we should be.
 		transform.position = startPosition;
 
+		// Start movement.
 		StartCoroutine(Move(endPosition));
     }
 
@@ -45,6 +49,9 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	{
 		transform.position = position;
 	}
+
+	[Client]
+	protected abstract IEnumerator ClientUpdate();
 
 	[Client]
     protected IEnumerator Move(Vector3 endPosition)
@@ -70,10 +77,32 @@ public abstract class NetworkCharacter : NetworkBehaviour
 
         yield break;
     }
+
+	[Client]
+	protected IEnumerator LocalUpdate()
+	{
+		while (true)
+		{
+			// Update sprite flip.
+			spriteRenderer.flipX = (facing.x != 0 && facing.x == -1 ? true : false);
+
+			// Call client update function.
+			yield return ClientUpdate();
+
+			yield return new WaitForSeconds(clientUpdateDelay);
+		}
+	}
 	
 	[Command]
 	protected void CmdGetPosition() {
-		TargetUpdatePosition(connectionToClient, transform.position);
+		try
+		{
+			TargetUpdatePosition(connectionToClient, transform.position);
+		}
+		catch (System.NullReferenceException)
+		{
+
+		}
 	}
 
 	[Server]
@@ -95,12 +124,16 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	[Server]
 	protected bool MoveCharacter(Vector2 direction) 
 	{
+		// Update facing direction.
+		facing = direction;
+		UpdateDirection();
+
 		// Check if we can move.
 		if (GetCanMove(direction)) 
 		{
 			// Get our target position.
-			Vector3 targetPosition = new Vector3(transform.position.x + direction.x,
-												transform.position.y + direction.y,
+			Vector3 targetPosition = new Vector3(Mathf.Floor(transform.position.x + direction.x) + 0.5f,
+												Mathf.Ceil(transform.position.y + direction.y) - 0.5f,
 												transform.position.z);
 
 			// Make networked movement.
@@ -118,23 +151,39 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	}
 
 	[Server]
+	public void TakeDamage(float amt)
+	{
+		// Subtract damage.
+		health -= amt;
+
+		// Damage callback.
+		OnTakeDamage(amt);
+	}
+
+	[Server]
     private IEnumerator NetworkUpdate()
     {
         while (true)
         {
+			// Check for death.
+			if (health <= 0.0f)
+			{
+				OnDie();
+			}
+
 			// Call character update.
-			yield return UpdateCharacter();
+			yield return ServerUpdate();
 
 			// Wait set time.
-            yield return new WaitForSeconds(updateDelay);
+            yield return new WaitForSeconds(serverUpdateDelay);
         }
     }
 
-	[Server]
-	protected abstract IEnumerator UpdateCharacter();
-
+	[Server] protected abstract IEnumerator ServerUpdate();
 	[Server] protected virtual void OnMoveStart() { }
 	[Server] protected virtual void OnMoveFinish() { }
+	[Server] protected virtual void OnTakeDamage(float amt) { }
+	[Server] protected virtual void OnDie() { }
 
 	[Server]
 	protected IEnumerator NetworkMove(Vector2 direction, Vector3 targetPosition) 
@@ -145,13 +194,11 @@ public abstract class NetworkCharacter : NetworkBehaviour
 		// Set animation parameters.
 		animator.SetBool("isMoving", true);
 
-		UpdateDirection(direction);
-
 		// Callback for move start.
 		OnMoveStart();
 
 		// Start character movement on all clients.
-		RpcMoveStart(direction, transform.position, targetPosition);
+		RpcMoveStart(transform.position, targetPosition);
 
 		// Wait for move.
 		yield return new WaitForSeconds(1.0f / moveSpeed);
@@ -172,15 +219,15 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	}
 
 	[Server]
-	protected void UpdateDirection(Vector2 direction)
+	protected void UpdateDirection()
 	{
-		if (direction.x != 0) 
+		if (facing.x != 0) 
 		{
 			animator.SetFloat("direction", 0.5f);
 		} 
-		else if (direction.y != 0) 
+		else if (facing.y != 0) 
 		{
-			switch ((int)direction.y) 
+			switch ((int)facing.y) 
 			{
 				case -1:
 					animator.SetFloat("direction", 0.0f);
@@ -192,7 +239,6 @@ public abstract class NetworkCharacter : NetworkBehaviour
 		}
 	}
 
-    // Use this for initialization
     protected void Start()
     {
 		// Get components.
@@ -201,12 +247,26 @@ public abstract class NetworkCharacter : NetworkBehaviour
 
         if (isServer)
         {
+			// Update health.
+			health = maxHealth;
+
+			// Fix player position.
+			transform.position = new Vector3(Mathf.Floor(transform.position.x) + 0.5f, Mathf.Floor(transform.position.y) + 0.5f, transform.position.z);
+
+			// Update initial facing direction.
+			facing = new Vector2(0, -1);
+
+			// Start server update coroutine.
             StartCoroutine(NetworkUpdate());
         }
-    }
+		
+		if (isClient)
+		{
+			// Get initial position.
+			CmdGetPosition();
 
-    protected void OnClientStart()
-    {
-        CmdGetPosition();
+			// Start client update coroutine.
+			StartCoroutine(LocalUpdate());
+		}
     }
 }

@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 114262981842572424}
   - component: {fileID: 114902596192209014}
   - component: {fileID: 61668800269874338}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Enemy1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,9 +99,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee729fd564ae054fadedecae349b638, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateDelay: 0.01
+  serverUpdateDelay: 0.01
+  clientUpdateDelay: 0.01
   moveSpeed: 1
+  maxHealth: 3
   isMoving: 0
+  facing: {x: 0, y: 0}
+  health: 0
 --- !u!114 &114432802877240950
 MonoBehaviour:
   m_ObjectHideFlags: 1

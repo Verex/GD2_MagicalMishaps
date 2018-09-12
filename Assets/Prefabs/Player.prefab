@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 114218110229733214}
   - component: {fileID: 114467024693457096}
   - component: {fileID: 61215455775263400}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,13 +99,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a512ab77b1fa34494f8e01c0eccea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateDelay: 0.02
-  moveSpeed: 1.35
+  serverUpdateDelay: 0.01
+  clientUpdateDelay: 0.01
+  moveSpeed: 1.4
+  maxHealth: 3
   isMoving: 0
+  facing: {x: 0, y: 0}
+  health: 0
   inputDelay: 0.008
   inputMoveThreshold: 0.4
   inputDirThreshold: 0.05
+  attackProjectileSpeed: 2.5
+  attackDelay: 0.85
   cameraPrefab: {fileID: 1140176402034416, guid: 4abf087637a99bd458d1eaefd6867765,
+    type: 2}
+  attackProjectilePrefab: {fileID: 1382884069727912, guid: d0f80e46b8cce2b4a9d42362b7cccd69,
     type: 2}
 --- !u!114 &114467024693457096
 MonoBehaviour:
