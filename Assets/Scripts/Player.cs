@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Tilemaps;
 
 [NetworkSettings(sendInterval = 0.01f)]
 public class Player : NetworkCharacter {
