@@ -101,7 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverUpdateDelay: 0.01
   clientUpdateDelay: 0.01
-  moveSpeed: 1.4
+  moveSpeed: 1.55
   maxHealth: 3
   isMoving: 0
   facing: {x: 0, y: 0}
@@ -111,6 +111,7 @@ MonoBehaviour:
   inputDirThreshold: 0.05
   attackProjectileSpeed: 2.5
   attackDelay: 0.85
+  movementDelay: 0.12
   cameraPrefab: {fileID: 1140176402034416, guid: 4abf087637a99bd458d1eaefd6867765,
     type: 2}
   attackProjectilePrefab: {fileID: 1382884069727912, guid: d0f80e46b8cce2b4a9d42362b7cccd69,

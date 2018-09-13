@@ -11,6 +11,7 @@ public class Player : NetworkCharacter {
 	[SerializeField] private float inputDirThreshold = 0.1f;
 	[SerializeField] private float attackProjectileSpeed = 2.0f;
 	[SerializeField] private float attackDelay = 2.0f;
+	[SerializeField] private float movementDelay = 0.4f;
 	[SerializeField] private GameObject cameraPrefab;
 	[SerializeField] private GameObject attackProjectilePrefab;
 
@@ -22,12 +23,21 @@ public class Player : NetworkCharacter {
 	private bool lastMove;
 	private bool lastAttack;
 	private float lastAttackTime = 0.0f;
+	private float lastMoveTime = 0.0f;
 	private PlayerInput playerInput;
 
 	[Command]
 	private void CmdMoveState(bool moving, Vector2 direction)
 	{
-		shouldMove = moving;
+		if (moving != shouldMove)
+		{
+			shouldMove = moving;
+
+			if (shouldMove == true)
+			{
+				lastMoveTime = Time.time;
+			}
+		}
 		
 		// Check if we're trying to change move direction.
 		if (moveDirection != direction && direction != Vector2.zero)
@@ -35,7 +45,7 @@ public class Player : NetworkCharacter {
 			moveDirection = direction;
 
 			// Update our animation if needed.
-			if (!shouldMove && !isMoving)
+			if (!isMoving)
 			{
 				facing = direction;
 				UpdateDirection();
@@ -114,7 +124,7 @@ public class Player : NetworkCharacter {
 	// Server side update.
 	protected override IEnumerator ServerUpdate()
 	{
-		if (!isMoving && shouldMove)
+		if (!isMoving && shouldMove && lastMoveTime + movementDelay < Time.time)
 		{
 			if (MoveCharacter(moveDirection))
 			{
