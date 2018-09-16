@@ -1035,6 +1035,11 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114262981842572424, guid: 1b5a8783ae5afee48ad557309a37e9bc,
+        type: 2}
+      propertyPath: gridSystem
+      value: 
+      objectReference: {fileID: 529971483}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b5a8783ae5afee48ad557309a37e9bc, type: 2}
   m_IsPrefabAsset: 0
@@ -1134,6 +1139,10 @@ Prefab:
     - target: {fileID: 1161831171274002, guid: 1b5a8783ae5afee48ad557309a37e9bc, type: 2}
       propertyPath: m_Name
       value: Enemy1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1161831171274002, guid: 1b5a8783ae5afee48ad557309a37e9bc, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b5a8783ae5afee48ad557309a37e9bc, type: 2}
@@ -5024,8 +5033,8 @@ Tilemap:
       m_ColliderType: 1
   - first: {x: 6, y: -4, z: 0}
     second:
-      m_TileIndex: 86
-      m_TileSpriteIndex: 86
+      m_TileIndex: 55
+      m_TileSpriteIndex: 55
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -5339,8 +5348,8 @@ Tilemap:
       m_ColliderType: 1
   - first: {x: 6, y: -3, z: 0}
     second:
-      m_TileIndex: 86
-      m_TileSpriteIndex: 86
+      m_TileIndex: 55
+      m_TileSpriteIndex: 55
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -9985,7 +9994,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 87667594eb92fb741a9efdd22f5943a8, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 88d991534e9aae141a38eb23fca3447d, type: 2}
-  - m_RefCount: 1
+  - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: a741bdb0cfadcf3499aa690ae3e11ec2, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 3ca3e70534b58e346b99c9c56eb37f0b, type: 2}
@@ -10047,7 +10056,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 19735e0ceca462641842321f32d670e5, type: 2}
   - m_RefCount: 4
     m_Data: {fileID: 11400000, guid: bec809d1636ac9d47b38371e6e7a8dee, type: 2}
-  - m_RefCount: 5
+  - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: 313b181313332754d9538614c2980104, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 3
@@ -10160,7 +10169,7 @@ Tilemap:
     m_Data: {fileID: 21300228, guid: 1b16e51850fcd9f40b08744e9a5857a9, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300300, guid: 1b16e51850fcd9f40b08744e9a5857a9, type: 3}
-  - m_RefCount: 1
+  - m_RefCount: 3
     m_Data: {fileID: 21300266, guid: 1b16e51850fcd9f40b08744e9a5857a9, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300188, guid: 1b16e51850fcd9f40b08744e9a5857a9, type: 3}
@@ -10222,7 +10231,7 @@ Tilemap:
     m_Data: {fileID: 21300240, guid: 1b16e51850fcd9f40b08744e9a5857a9, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 21300152, guid: 1b16e51850fcd9f40b08744e9a5857a9, type: 3}
-  - m_RefCount: 5
+  - m_RefCount: 3
     m_Data: {fileID: 21300270, guid: 1b16e51850fcd9f40b08744e9a5857a9, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 945
@@ -10282,8 +10291,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultCost: 100
   tileCosts:
-  - name: 
-    cost: 0
+  - name: sand
+    cost: 5
+  - name: path_01
+    cost: 1
+  - name: path_02
+    cost: 1
+  - name: path_03
+    cost: 1
+  - name: path_04
+    cost: 1
+  - name: path_05
+    cost: 1
+  - name: path_06
+    cost: 1
+  - name: path_07
+    cost: 1
+  - name: path_08
+    cost: 1
+  - name: path_09
+    cost: 1
+  - name: path_10
+    cost: 1
+  - name: path_11
+    cost: 1
+  - name: path_12
+    cost: 1
+  - name: path_13
+    cost: 1
+  gridSize: {x: 100, y: 100}
+  grid: {fileID: 0}
 --- !u!1 &537871129
 GameObject:
   m_ObjectHideFlags: 0
