@@ -22,9 +22,9 @@ GameObject:
   - component: {fileID: 212844819822808148}
   - component: {fileID: 95498483199062686}
   - component: {fileID: 114181385866258232}
-  - component: {fileID: 114095602965403356}
   - component: {fileID: 114650870856306376}
   - component: {fileID: 61823393480016188}
+  - component: {fileID: 114055139241079476}
   m_Layer: 9
   m_Name: Enemy2
   m_TagString: NPC
@@ -88,7 +88,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &114095602965403356
+--- !u!114 &114055139241079476
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,17 +96,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1264639546677514}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eee729fd564ae054fadedecae349b638, type: 3}
+  m_Script: {fileID: 11500000, guid: 115720e0a29263d47a78b2e7c8d6c975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   serverUpdateDelay: 0.01
   clientUpdateDelay: 0.01
-  moveSpeed: 1
-  maxHealth: 2
+  moveSpeed: 1.5
+  maxHealth: 3
   isMoving: 0
   facing: {x: 0, y: 0}
   health: 0
+  viewDistance: {x: 8, y: 8}
+  maxTargetDistance: 7
+  rangedAttackDistance: 4
   attackDelay: 1
+  meleeAttackDelay: 1
+  attackProjectileSpeed: 1
+  attackProjectilePrefab: {fileID: 1382884069727912, guid: d0f80e46b8cce2b4a9d42362b7cccd69,
+    type: 2}
   meleeProjectilePrefab: {fileID: 1115606097566444, guid: c641b28dfa4c4e0499084bd62252a5a7,
     type: 2}
 --- !u!114 &114181385866258232

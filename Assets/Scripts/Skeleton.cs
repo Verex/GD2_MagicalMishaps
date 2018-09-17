@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 
 public class Skeleton : NetworkNPC
 {
+    [SerializeField] private Vector2 viewDistance = new Vector2(2, 2);
+    [SerializeField] private float maxTargetDistance = 2.0f;
     [SerializeField] private float attackDelay = 1.0f;
     [SerializeField] private GameObject meleeProjectilePrefab;
     private Player target;
@@ -46,12 +48,12 @@ public class Skeleton : NetworkNPC
         Vector3Int targetPosition = WorldToCell(target.transform.position);
         Vector2Int dest = new Vector2Int(targetPosition.x, targetPosition.y);
 
+        // Clear old path.
+        ClearPath();
+
         // Check how far target has moved from path.
         if (Vector2.Distance(pathDestination, dest) >= maxDist)
         {
-            // Clear old path.
-            ClearPath();
-
             // Compute new path.
             FindPath(dest);
         }
@@ -76,7 +78,7 @@ public class Skeleton : NetworkNPC
     {
         float distance = Vector2.Distance(transform.position, target.transform.position);
 
-        if (distance <= 5.0f)
+        if (distance <= maxTargetDistance)
         {
             // Raycast and check for player.
             RaycastHit2D hit = Physics2D.Raycast(transform.position, facing, 1.0f, LayerMask.GetMask("Characters"));
@@ -97,7 +99,7 @@ public class Skeleton : NetworkNPC
                 }
             }
 
-            CheckTargetPosition(0.5f);
+            CheckTargetPosition(maxTargetDistance);
         }
         else
         {
@@ -130,7 +132,7 @@ public class Skeleton : NetworkNPC
     {
         if (target == null)
         {
-            Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, new Vector2(5f, 5f), LayerMask.GetMask("Characters"));
+            Collider2D[] colliders = Physics2D.OverlapBoxAll(transform.position, viewDistance, LayerMask.GetMask("Characters"));
 
             // Check if players nearby.
             foreach (Collider2D c in colliders)

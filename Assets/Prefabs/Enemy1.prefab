@@ -106,6 +106,9 @@ MonoBehaviour:
   isMoving: 0
   facing: {x: 0, y: 0}
   health: 0
+  viewDistance: {x: 5, y: 5}
+  maxTargetDistance: 5
+  attackDelay: 1
   meleeProjectilePrefab: {fileID: 1115606097566444, guid: c641b28dfa4c4e0499084bd62252a5a7,
     type: 2}
 --- !u!114 &114432802877240950

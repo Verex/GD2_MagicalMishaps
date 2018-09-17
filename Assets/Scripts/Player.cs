@@ -21,7 +21,7 @@ public class Player : NetworkCharacter
     [SerializeField] private GameObject meleeProjectilePrefab;
 
     [SyncVar] public int score = 0;
-    
+
     private GameObject camera;
     private Vector2 moveDirection;
     private Vector2 lastDirection;
@@ -149,7 +149,7 @@ public class Player : NetworkCharacter
     // Server side update.
     protected override IEnumerator ServerUpdate()
     {
-        if (!isMoving && shouldMove && lastMoveTime + movementDelay < Time.time)
+        if (!isMoving && shouldMove && lastMoveTime + movementDelay < Time.time && health > 0)
         {
             if (MoveCharacter(moveDirection))
             {
@@ -209,7 +209,18 @@ public class Player : NetworkCharacter
 
     public override void OnKill(NetworkCharacter character)
     {
-        score++;
+        if (character is Mage)
+        {
+            score += 2;
+        }
+        else if (character is Player)
+        {
+            score += 3;
+        }
+        else
+        {
+            score++;
+        }
     }
 
     protected override IEnumerator OnDie()
