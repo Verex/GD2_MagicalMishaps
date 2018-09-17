@@ -99,9 +99,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 115720e0a29263d47a78b2e7c8d6c975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverUpdateDelay: 0.01
+  serverUpdateDelay: 0.008
   clientUpdateDelay: 0.01
-  moveSpeed: 1.5
+  moveSpeed: 1.45
   maxHealth: 3
   isMoving: 0
   facing: {x: 0, y: 0}

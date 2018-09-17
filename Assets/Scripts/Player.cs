@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Tilemaps;
 
-[NetworkSettings(sendInterval = 0.01f)]
+[NetworkSettings(sendInterval = 0.008f)]
 public class Player : NetworkCharacter
 {
 
@@ -233,6 +233,8 @@ public class Player : NetworkCharacter
 
         // Reset score.
         score = 0;
+
+        yield return new WaitForSeconds(1.8f);
 
         RpcUpdatePosition(transform.position);
 

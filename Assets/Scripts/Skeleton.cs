@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[NetworkSettings(sendInterval = 0.008f)]
 public class Skeleton : NetworkNPC
 {
     [SerializeField] private Vector2 viewDistance = new Vector2(2, 2);

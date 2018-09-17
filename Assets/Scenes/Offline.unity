@@ -416,7 +416,7 @@ MonoBehaviour:
   - {fileID: 1115606097566444, guid: c641b28dfa4c4e0499084bd62252a5a7, type: 2}
   - {fileID: 1161831171274002, guid: 1b5a8783ae5afee48ad557309a37e9bc, type: 2}
   - {fileID: 1264639546677514, guid: 33cd86097617fc449a2aca42a91bb177, type: 2}
-  m_CustomConfig: 0
+  m_CustomConfig: 1
   m_MaxConnections: 4
   m_ConnectionConfig:
     m_PacketSize: 1440
@@ -458,11 +458,11 @@ MonoBehaviour:
     m_MaxTimerTimeout: 12000
     m_MinNetSimulatorTimeout: 1
     m_MaxNetSimulatorTimeout: 12000
-  m_Channels: 0500000000000000
+  m_Channels: 050000000100000000000000
   m_UseWebSockets: 0
   m_UseSimulator: 0
-  m_SimulatedLatency: 1
-  m_PacketLossPercentage: 0
+  m_SimulatedLatency: 69
+  m_PacketLossPercentage: 12.1
   m_MaxBufferedPackets: 16
   m_AllowFragmentation: 1
   m_MatchHost: mm.unet.unity3d.com
