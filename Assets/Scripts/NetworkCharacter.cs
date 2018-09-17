@@ -11,7 +11,7 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	[SerializeField] private float serverUpdateDelay = 0.01f;
 	[SerializeField] private float clientUpdateDelay = 0.01f;
     [SerializeField] protected float moveSpeed = 1.0f;
-	[SerializeField] protected float maxHealth = 3f;
+	[SerializeField] public float maxHealth = 3f;
 
     public bool isMoving;
 
@@ -42,6 +42,12 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	{
 		// Update sprite flip.
 		spriteRenderer.flipX = (direction.x != 0 && direction.x == -1 ? true : false);
+	}
+
+	[ClientRpc]
+	protected void RpcUpdatePosition(Vector3 position)
+	{
+		transform.position = position;
 	}
 
 	[TargetRpc]
@@ -151,13 +157,15 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	}
 
 	[Server]
-	public void TakeDamage(float amt)
+	public float TakeDamage(float amt)
 	{
 		// Subtract damage.
 		health -= amt;
 
 		// Damage callback.
 		OnTakeDamage(amt);
+
+		return health;
 	}
 
 	[Server]
@@ -168,7 +176,7 @@ public abstract class NetworkCharacter : NetworkBehaviour
 			// Check for death.
 			if (health <= 0.0f)
 			{
-				OnDie();
+				yield return OnDie();
 			}
 
 			// Call character update.
@@ -180,10 +188,11 @@ public abstract class NetworkCharacter : NetworkBehaviour
     }
 
 	[Server] protected abstract IEnumerator ServerUpdate();
+	[Server] protected abstract IEnumerator OnDie();
+	[Server] public abstract void OnKill(NetworkCharacter character);
 	[Server] protected virtual void OnMoveStart() { }
 	[Server] protected virtual void OnMoveFinish() { }
 	[Server] protected virtual void OnTakeDamage(float amt) { }
-	[Server] protected virtual void OnDie() { }
 
 	[Server]
 	protected IEnumerator NetworkMove(Vector2 direction, Vector3 targetPosition) 

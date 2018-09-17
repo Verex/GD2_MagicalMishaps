@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 public abstract class NetworkNPC : NetworkCharacter
 {
     protected Vector2 moveDirection;
+    protected Vector2 pathDestination;
     private GridSystem gridSystem;
     protected Queue<Vector2Int> movePath;
 
@@ -43,27 +44,60 @@ public abstract class NetworkNPC : NetworkCharacter
 
                 if (GetNextPathMove())
                 {
-                    MoveCharacter(moveDirection);
+                    // Move character along path.
+                    if (MoveCharacter(moveDirection))
+                    {
+                        // We were able to move.
+						yield return OnPathMove();
+                    }
+                    else
+                    {
+                        // We were not able to make move.
+						yield return OnPathObstruction();
+                    }
                 }
                 else
                 {
-                    Debug.Log("No more path.");
-
-                    // Stop movement.
-                    StopMovement();
-
-                    // Wait.
-                    yield return new WaitForSeconds(1.0f);
-
-                    // Clear path.
-                    movePath = null;
+					yield return OnPathFinish();
                 }
+            }
+            else
+            {
+                yield return OnHasNoPath();
             }
         }
 
         yield return null;
     }
+	[Server] protected Vector3Int WorldToCell(Vector3 position)
+	{
+		return gridSystem.grid.WorldToCell(position);
+	}
 
+	[Server] protected abstract IEnumerator OnPathMove();
+	[Server]
+	protected virtual IEnumerator OnPathObstruction()
+	{
+		// Try to calculate new path.
+
+		yield return null;
+	}
+    [Server]
+    protected virtual IEnumerator OnPathFinish()
+    {
+		Debug.Log("Path finished");
+
+        // Stop movement.
+        StopMovement();
+
+		// Clear path queue.
+        ClearPath();
+
+        yield return null;
+    }
+    [Server] protected abstract IEnumerator OnHasNoPath();
+
+    [Server]
     protected bool GetNextPathMove()
     {
         if (hasPath)
@@ -83,6 +117,15 @@ public abstract class NetworkNPC : NetworkCharacter
         return false;
     }
 
+    [Server]
+    protected void ClearPath()
+    {
+        // Clear pathfinding values.
+        pathDestination = Vector2.zero;
+        movePath = null;
+    }
+
+    [Server]
     protected void FindPath(Vector2Int destination, int searchDepth = 5000)
     {
         // Find path in tilemap.
@@ -91,11 +134,14 @@ public abstract class NetworkNPC : NetworkCharacter
         // Check if path found.
         if (path != null)
         {
-			// Convert path to queue (and clear old).
+            // Convert path to queue (and clear old).
             movePath = new Queue<Vector2Int>(path);
 
-			// Remove current position from path.
-			movePath.Dequeue();
+            // Remove current position from path.
+            movePath.Dequeue();
+
+            // Store path destination.
+            pathDestination = destination;
         }
     }
 
@@ -103,10 +149,13 @@ public abstract class NetworkNPC : NetworkCharacter
     {
         base.Start();
 
-        // Set initial move direction.
-        moveDirection = new Vector2(0, -1);
+        if (isServer)
+        {
+            // Set initial move direction.
+            moveDirection = new Vector2(0, -1);
 
-        // Get the grid system for the NPC (for pathfinding)
-        gridSystem = (GridSystem)GameObject.FindObjectOfType(typeof(GridSystem));
+            // Get the grid system for the NPC (for pathfinding)
+            gridSystem = (GridSystem)GameObject.FindObjectOfType(typeof(GridSystem));
+        }
     }
 }

@@ -5,7 +5,9 @@ using UnityEngine.Networking;
 
 public class projectile_fireball : NetworkBehaviour
 {
-	[SerializeField] private float damage = 1.0f;
+    [SerializeField] private float damage = 1.0f;
+    
+    public NetworkCharacter owner;
 
     // Use this for initialization
     void Start()
@@ -24,11 +26,17 @@ public class projectile_fireball : NetworkBehaviour
         if (isServer)
         {
             if (col.collider.gameObject.layer == LayerMask.NameToLayer("Characters"))
-			{
-				NetworkCharacter nc = col.collider.gameObject.GetComponent<NetworkCharacter>();
+            {
+                NetworkCharacter nc = col.collider.gameObject.GetComponent<NetworkCharacter>();
 
-				nc.TakeDamage(damage);
-			}
+                if (nc.TakeDamage(damage) <= 0)
+                {
+                    if (owner != null && nc != null)
+                    {
+                        owner.OnKill(nc);
+                    }
+                }
+            }
 
             NetworkServer.Destroy(this.gameObject);
         }

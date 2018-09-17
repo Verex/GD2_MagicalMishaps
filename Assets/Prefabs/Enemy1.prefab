@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 61668800269874338}
   m_Layer: 9
   m_Name: Enemy1
-  m_TagString: Untagged
+  m_TagString: NPC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -102,10 +102,12 @@ MonoBehaviour:
   serverUpdateDelay: 0.01
   clientUpdateDelay: 0.01
   moveSpeed: 1
-  maxHealth: 3
+  maxHealth: 2
   isMoving: 0
   facing: {x: 0, y: 0}
   health: 0
+  meleeProjectilePrefab: {fileID: 1115606097566444, guid: c641b28dfa4c4e0499084bd62252a5a7,
+    type: 2}
 --- !u!114 &114432802877240950
 MonoBehaviour:
   m_ObjectHideFlags: 1

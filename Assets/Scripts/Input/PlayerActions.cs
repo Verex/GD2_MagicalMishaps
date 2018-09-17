@@ -3,6 +3,7 @@ using InControl;
 
 public class PlayerActions : PlayerActionSet {
     public PlayerAction Attack;
+    public PlayerAction Melee;
 
     public PlayerAction Left;
     public PlayerAction Right;
@@ -12,6 +13,7 @@ public class PlayerActions : PlayerActionSet {
 
     public PlayerActions() {
         Attack = CreatePlayerAction("Attack");
+        Melee = CreatePlayerAction("Melee");
 
         Left = CreatePlayerAction("Move Left");
         Right = CreatePlayerAction("Move Right");
@@ -26,6 +28,8 @@ public class PlayerActions : PlayerActionSet {
         playerActions.Attack.AddDefaultBinding(Key.Space);
         playerActions.Attack.AddDefaultBinding(InputControlType.Action3);
         playerActions.Attack.AddDefaultBinding(InputControlType.Back);
+
+        playerActions.Melee.AddDefaultBinding(Key.V);
 
         playerActions.Up.AddDefaultBinding(Key.W);
         playerActions.Down.AddDefaultBinding(Key.S);

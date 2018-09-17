@@ -178,6 +178,19 @@ public class GridSystem : MonoBehaviour
             {
                 if (tb.name == tc.name)
                 {
+                    // Get world position.
+                    Vector3 worldPos = grid.GetCellCenterWorld(new Vector3Int(position.x, position.y, 0));
+
+                    // Get overlapping collider.
+                    Collider2D c = Physics2D.OverlapPoint(worldPos);
+                    if (c != null)
+                    {
+                        if (c.tag != "Player")
+                        {
+                            return defaultCost;
+                        }
+                    }
+
                     return tc.cost;
                 }
             }

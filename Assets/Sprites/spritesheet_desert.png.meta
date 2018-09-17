@@ -2700,7 +2700,7 @@ TextureImporter:
       name: spritesheet_desert_123
       rect:
         serializedVersion: 2
-        x: 58
+        x: 64
         y: 16
         width: 16
         height: 16
