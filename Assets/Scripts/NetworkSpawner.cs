@@ -24,7 +24,7 @@ public class NetworkSpawner : NetworkBehaviour
             if (spawnLocations.Length > 0 && mobPrefabs.Length > 0 && spawned.Count < maxMobs)
             {
                 // Select random spawn location and mob.
-                Transform spawnTransform = spawnLocations[Random.Range(0, spawnLocations.Length - 1)];
+                Transform spawnTransform = spawnLocations[Random.Range(0, spawnLocations.Length)];
 
 				// Check for empty position.
 				Collider2D collider = Physics2D.OverlapPoint(spawnTransform.position);
@@ -32,7 +32,7 @@ public class NetworkSpawner : NetworkBehaviour
 				// Check for empty space.
 				if (collider == null)
 				{
-					GameObject prefab = mobPrefabs[Random.Range(0, mobPrefabs.Length - 1)];
+					GameObject prefab = mobPrefabs[Random.Range(0, mobPrefabs.Length)];
 
 					// Spawn mob at location.
 					GameObject mob = Instantiate(prefab, spawnTransform.position, Quaternion.identity);

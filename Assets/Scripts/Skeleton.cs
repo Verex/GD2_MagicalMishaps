@@ -74,26 +74,36 @@ public class Skeleton : NetworkNPC
 
     private IEnumerator FindPlayer()
     {
-        // Raycast and check for player.
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, facing, 1.0f, LayerMask.GetMask("Characters"));
+        float distance = Vector2.Distance(transform.position, target.transform.position);
 
-        // Check for hit.
-        if (hit.collider != null)
+        if (distance <= 5.0f)
         {
-            // Check if we hit player.
-            if (hit.collider.tag == "Player")
+            // Raycast and check for player.
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, facing, 1.0f, LayerMask.GetMask("Characters"));
+
+            // Check for hit.
+            if (hit.collider != null)
             {
-                // Clear path.
-                ClearPath();
+                // Check if we hit player.
+                if (hit.collider.tag == "Player")
+                {
+                    // Clear path.
+                    ClearPath();
 
-                // Do attack.
-                yield return Attack();
+                    // Do attack.
+                    yield return Attack();
 
-                yield break;
+                    yield break;
+                }
             }
-        }
 
-        CheckTargetPosition(0.5f);
+            CheckTargetPosition(0.5f);
+        }
+        else
+        {
+            // Clear target;
+            target = null;
+        }
 
         yield return null;
     }
@@ -144,7 +154,23 @@ public class Skeleton : NetworkNPC
                 }
             }
 
-            yield return new WaitForSeconds(0.2f);
+            int move = Random.Range(0, 5);
+
+            if (move == 0)
+            {
+                // Choose random move direction.
+                moveDirection = RandomDirection();
+
+                MoveCharacter(moveDirection);
+
+                yield return new WaitForSeconds(0.3f);
+            }
+            else
+            {
+                StopMovement();
+
+                yield return new WaitForSeconds(1.2f);
+            }
         }
         else
         {
@@ -152,12 +178,24 @@ public class Skeleton : NetworkNPC
         }
     }
 
+    [Server]
+    protected override void OnTakeDamage(NetworkCharacter attacker, float damage)
+    {
+        if (attacker == null) return;
+
+        // Change targets.
+        if (attacker.tag == "Player")
+        {
+            target = (Player)attacker;
+        }
+    }
+
     public override void OnKill(NetworkCharacter character)
     {
-		if (character == target)
-		{
-			target = null;
-		}
+        if (character == target)
+        {
+            target = null;
+        }
     }
 
     protected override IEnumerator OnDie()

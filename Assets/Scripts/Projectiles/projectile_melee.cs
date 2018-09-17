@@ -26,7 +26,7 @@ public class projectile_melee : NetworkBehaviour
 
                 NetworkCharacter nc = collider.gameObject.GetComponent<NetworkCharacter>();
 
-                if (nc.TakeDamage(damage) <= 0)
+                if (nc.TakeDamage(owner, damage) <= 0)
                 {
                     if (owner != null && nc != null)
                     {

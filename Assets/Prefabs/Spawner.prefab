@@ -106,3 +106,4 @@ MonoBehaviour:
   - {fileID: 0}
   mobPrefabs:
   - {fileID: 1161831171274002, guid: 1b5a8783ae5afee48ad557309a37e9bc, type: 2}
+  - {fileID: 1264639546677514, guid: 33cd86097617fc449a2aca42a91bb177, type: 2}

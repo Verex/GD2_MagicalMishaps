@@ -157,13 +157,13 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	}
 
 	[Server]
-	public float TakeDamage(float amt)
+	public float TakeDamage(NetworkCharacter attacker, float amt)
 	{
 		// Subtract damage.
 		health -= amt;
 
 		// Damage callback.
-		OnTakeDamage(amt);
+		OnTakeDamage(attacker, amt);
 
 		return health;
 	}
@@ -192,7 +192,7 @@ public abstract class NetworkCharacter : NetworkBehaviour
 	[Server] public abstract void OnKill(NetworkCharacter character);
 	[Server] protected virtual void OnMoveStart() { }
 	[Server] protected virtual void OnMoveFinish() { }
-	[Server] protected virtual void OnTakeDamage(float amt) { }
+	[Server] protected virtual void OnTakeDamage(NetworkCharacter attacker, float amt) { }
 
 	[Server]
 	protected IEnumerator NetworkMove(Vector2 direction, Vector3 targetPosition) 

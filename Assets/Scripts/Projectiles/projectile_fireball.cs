@@ -29,7 +29,7 @@ public class projectile_fireball : NetworkBehaviour
             {
                 NetworkCharacter nc = col.collider.gameObject.GetComponent<NetworkCharacter>();
 
-                if (nc.TakeDamage(damage) <= 0)
+                if (nc.TakeDamage(owner, damage) <= 0)
                 {
                     if (owner != null && nc != null)
                     {

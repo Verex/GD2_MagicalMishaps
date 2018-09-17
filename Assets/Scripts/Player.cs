@@ -16,13 +16,13 @@ public class Player : NetworkCharacter
     [SerializeField] private float meleeDelay = 1.0f;
     [SerializeField] private float movementDelay = 0.4f;
     [SerializeField] private GameObject cameraPrefab;
-	[SerializeField] private GameObject UIPrefab;
+    [SerializeField] private GameObject UIPrefab;
     [SerializeField] private GameObject attackProjectilePrefab;
     [SerializeField] private GameObject meleeProjectilePrefab;
 
-	[SyncVar] public int score = 0;
+    [SyncVar] public int score = 0;
+    
     private GameObject camera;
-
     private Vector2 moveDirection;
     private Vector2 lastDirection;
     private bool shouldMove = false;
@@ -71,7 +71,7 @@ public class Player : NetworkCharacter
 
             GameObject p = Instantiate(attackProjectilePrefab, transform.position + new Vector3(facing.x, facing.y, transform.position.z), Quaternion.identity);
             p.GetComponent<Rigidbody2D>().AddForce(facing * attackProjectileSpeed, ForceMode2D.Impulse);
-			p.GetComponent<projectile_fireball>().owner = this;
+            p.GetComponent<projectile_fireball>().owner = this;
             NetworkServer.Spawn(p);
         }
     }
@@ -88,7 +88,7 @@ public class Player : NetworkCharacter
             GameObject m = Instantiate(meleeProjectilePrefab,
                                     new Vector3(transform.position.x + facing.x, transform.position.y + facing.y, -2),
                                     Quaternion.AngleAxis(angle, Vector3.forward));
-			m.GetComponent<projectile_melee>().owner = this;
+            m.GetComponent<projectile_melee>().owner = this;
             NetworkServer.Spawn(m);
         }
     }
@@ -194,10 +194,10 @@ public class Player : NetworkCharacter
             camera.transform.parent = transform;
             camera.transform.localPosition = new Vector3(0, 0, -10);
 
-			// Create player's UI.
-			GameObject ui = Instantiate(UIPrefab);
+            // Create player's UI.
+            GameObject ui = Instantiate(UIPrefab);
 
-			ui.GetComponent<UIControllerGame>().playerTarget = this;
+            ui.GetComponent<UIControllerGame>().playerTarget = this;
 
             // Add player input component.
             playerInput = gameObject.AddComponent(typeof(PlayerInput)) as PlayerInput;
@@ -207,25 +207,25 @@ public class Player : NetworkCharacter
         }
     }
 
-	public override void OnKill(NetworkCharacter character)
-	{
-		score++;
-	}
+    public override void OnKill(NetworkCharacter character)
+    {
+        score++;
+    }
 
     protected override IEnumerator OnDie()
     {
-		// Reset position.
+        // Reset position.
         transform.position = new Vector3(-2.5f, -2.5f, 0);
 
-		// Reset health.
-		health = maxHealth;
+        // Reset health.
+        health = maxHealth;
 
-		// Reset score.
-		score = 0;
+        // Reset score.
+        score = 0;
 
-		RpcUpdatePosition(transform.position);
+        RpcUpdatePosition(transform.position);
 
-		yield break;
+        yield break;
     }
 
     private void Update()
